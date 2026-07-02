@@ -48,17 +48,37 @@ export default function AssistantJuridique() {
   const [ouvert, setOuvert] = useState(false);
   const [messages, setMessages] = useState<Message[]>([ACCUEIL]);
   const [saisie, setSaisie] = useState("");
+  const [enCours, setEnCours] = useState(false);
   const finRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, ouvert]);
+  }, [messages, ouvert, enCours]);
 
-  function envoyer(question: string) {
+  async function envoyer(question: string) {
     const q = question.trim();
-    if (!q) return;
-    setMessages((m) => [...m, { role: "user", texte: q }, repondre(q)]);
+    if (!q || enCours) return;
+    setMessages((m) => [...m, { role: "user", texte: q }]);
     setSaisie("");
+    setEnCours(true);
+    // RAG complet : la route serveur récupère + génère (Groq). Repli local sinon.
+    try {
+      const r = await fetch("/api/juridique", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q }),
+      });
+      const data = await r.json();
+      if (data.ok) {
+        setMessages((m) => [...m, { role: "bot", texte: data.texte, sources: data.sources }]);
+      } else {
+        setMessages((m) => [...m, repondre(q)]);
+      }
+    } catch {
+      setMessages((m) => [...m, repondre(q)]);
+    } finally {
+      setEnCours(false);
+    }
   }
 
   return (
@@ -134,6 +154,17 @@ export default function AssistantJuridique() {
               </div>
             ))}
 
+            {/* Indicateur de saisie */}
+            {enCours && (
+              <div className="flex justify-start">
+                <div className="flex items-center gap-1 rounded-2xl rounded-bl-md bg-white px-4 py-3 shadow-sm">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-ink-soft/50 [animation-delay:-0.2s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-ink-soft/50 [animation-delay:-0.1s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-ink-soft/50" />
+                </div>
+              </div>
+            )}
+
             {/* Suggestions (seulement au début) */}
             {messages.length === 1 && (
               <div className="flex flex-wrap gap-2 pt-1">
@@ -164,12 +195,13 @@ export default function AssistantJuridique() {
             <input
               value={saisie}
               onChange={(e) => setSaisie(e.target.value)}
+              disabled={enCours}
               placeholder="Pose ta question…"
-              className="flex-1 rounded-full border border-black/10 bg-cream px-4 py-2.5 text-[14px] text-ink outline-none focus:border-brand"
+              className="flex-1 rounded-full border border-black/10 bg-cream px-4 py-2.5 text-[14px] text-ink outline-none focus:border-brand disabled:opacity-60"
             />
             <button
               type="submit"
-              disabled={!saisie.trim()}
+              disabled={!saisie.trim() || enCours}
               aria-label="Envoyer"
               className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand text-white disabled:opacity-40"
             >
