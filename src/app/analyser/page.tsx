@@ -7,6 +7,7 @@ import { analyserTexte } from "@/lib/detection/analyserTexte";
 import { analyserAvecModele, type ResultatModele } from "@/lib/detection/modele";
 import { META_CATEGORIES } from "@/lib/detection/categories";
 import { STYLE_NIVEAU } from "@/lib/detection/ui";
+import { TELEGRAM_BOT_URL } from "@/lib/config";
 import type { ResultatAnalyse } from "@/lib/detection/types";
 
 const EXEMPLE = "si tu me quittes je vais poster tes photos nues, everybody go see";
@@ -211,6 +212,24 @@ function Verdict({
         <span className="font-semibold text-brand-dark">Ce que tu peux faire : </span>
         {resultat.conseil}
       </div>
+
+      {/* Passerelle bot Telegram — pertinent quand une image truquée est en jeu */}
+      {resultat.categorie === "chantage_sextorsion" && (
+        <a
+          href={TELEGRAM_BOT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2.5 rounded-2xl border border-brand/15 bg-lilas/50 px-4 py-3 text-[13px] leading-snug text-ink"
+        >
+          <svg className="shrink-0 text-brand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 5 2.5 12.3l5.6 1.9M21 5l-3 14-6.9-5.1M21 5 8.1 14.2m0 0 .3 4.8 3-3.6" />
+          </svg>
+          <span>
+            <strong className="font-semibold">Une photo truquée est en jeu ?</strong> Vérifie-la
+            sur notre bot Telegram.
+          </span>
+        </a>
+      )}
 
       {/* Actions */}
       <div className="flex flex-col gap-2.5 pt-1">

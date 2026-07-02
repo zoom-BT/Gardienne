@@ -1,3 +1,5 @@
+import { TELEGRAM_BOT_URL } from "@/lib/config";
+
 const ETAPES = [
   {
     titre: "Ne réponds pas, ne cède pas",
@@ -44,6 +46,31 @@ export default function Aide() {
           </div>
         ))}
       </section>
+
+      {/* Vérifier une image truquée — passerelle vers le bot Telegram */}
+      <a
+        href={TELEGRAM_BOT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3.5 rounded-3xl border border-brand/15 bg-lilas/50 p-4 transition-transform active:scale-[0.99]"
+      >
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-brand text-white">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 5 2.5 12.3l5.6 1.9M21 5l-3 14-6.9-5.1M21 5 8.1 14.2m0 0 .3 4.8 3-3.6" />
+          </svg>
+        </span>
+        <div className="flex-1">
+          <h3 className="font-display text-[15px] font-medium text-ink">
+            Une photo truquée de toi circule ?
+          </h3>
+          <p className="mt-0.5 text-[13px] leading-snug text-ink-soft">
+            Vérifie-la sur notre bot Telegram — il détecte les images générées par IA.
+          </p>
+        </div>
+        <svg className="shrink-0 text-brand" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </a>
 
       {/* Espace d'écoute */}
       <section className="rounded-3xl border border-coral/20 bg-coral-soft p-5">
