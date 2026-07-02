@@ -4,8 +4,17 @@ Bonus du projet Gardienne. La fille envoie une photo au bot ; il répond si elle
 semble **truquée** (deepfake). Cadre : une image truquée sert à **harceler** →
 c'est du cyberharcèlement, pas de la « fake news ».
 
+Détection à **2 couches** (+ 1 en feuille de route) :
+
+1. **Provenance C2PA** — lit les *Content Credentials* signés par les grands
+   générateurs (OpenAI/DALL·E, Google Gemini/Imagen, Adobe Firefly…). Preuve
+   forte quand présente. ⚠️ souvent effacée après un partage réseau (WhatsApp/FB).
+2. **Classifieur de deepfake** — modèle Hugging Face existant ; marche même sans
+   métadonnées (analyse des artefacts visuels).
+3. **SynthID (filigrane pixel)** — *feuille de route* : survit au partage, mais
+   le détecteur public n'est pas encore ouvert (liste d'attente Google).
+
 - **Zéro dépendance** (Node 24+, `fetch` intégré).
-- Détection via un **modèle Hugging Face existant** (aucun entraînement).
 
 ## Prérequis
 

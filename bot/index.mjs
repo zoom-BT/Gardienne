@@ -52,6 +52,40 @@ async function telechargerPhoto(fileId) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+// ── Couche 1 : provenance C2PA (Content Credentials) ────────────────────────
+// Les grands générateurs (OpenAI/DALL·E, Google Gemini/Imagen, Adobe Firefly…)
+// signent leurs images avec un manifeste C2PA. On détecte sa présence et, si
+// possible, l'outil d'origine. Standard ouvert → lisible sans clé.
+// NB : les réseaux sociaux (WhatsApp/Facebook) effacent souvent ces métadonnées.
+function analyseProvenanceC2PA(imageBytes) {
+  const s = imageBytes.toString("latin1");
+  const present = s.includes("c2pa") || s.includes("urn:c2pa") || s.includes("jumbf");
+  if (!present) return { present: false, generateur: null };
+
+  const marques = [
+    ["ChatGPT", "OpenAI (ChatGPT)"],
+    ["DALL", "OpenAI (DALL·E)"],
+    ["OpenAI", "OpenAI"],
+    ["Gemini", "Google (Gemini)"],
+    ["Imagen", "Google (Imagen)"],
+    ["Nano Banana", "Google"],
+    ["Google", "Google"],
+    ["Firefly", "Adobe Firefly"],
+    ["Adobe", "Adobe"],
+    ["Midjourney", "Midjourney"],
+    ["Microsoft", "Microsoft"],
+  ];
+  let generateur = null;
+  for (const [aiguille, label] of marques) {
+    if (s.includes(aiguille)) {
+      generateur = label;
+      break;
+    }
+  }
+  return { present: true, generateur };
+}
+
+// ── Couche 2 : classifieur de deepfake (modèle HF) ──────────────────────────
 // Interroge le modèle HF de détection de deepfake sur les octets de l'image.
 async function detecterDeepfake(imageBytes) {
   const res = await fetch(`https://router.huggingface.co/hf-inference/models/${MODEL}`, {
@@ -75,34 +109,58 @@ async function detecterDeepfake(imageBytes) {
   return { scoreFake, brut: data };
 }
 
-function messageVerdict(scoreFake) {
+// Phrase courte du classifieur visuel.
+function phraseClassifieur(scoreFake) {
+  if (scoreFake === null) return "le classifieur n'a pas pu analyser l'image cette fois.";
   const pct = Math.round(scoreFake * 100);
-  if (scoreFake >= 0.6) {
-    return (
-      `🚨 <b>Image probablement TRUQUÉE</b> (${pct}%).\n\n` +
-      `Si cette image est utilisée contre toi, ce n'est <b>pas ta faute</b> et c'est un délit. ` +
-      `Ne la partage pas, garde-la comme preuve, et signale la personne. ` +
-      `Tu peux porter plainte (ANTIC / police).`
+  if (scoreFake >= 0.6) return `image <b>probablement truquée</b> (${pct}%).`;
+  if (scoreFake <= 0.4) return `image plutôt <b>authentique</b> (truquage estimé ${pct}%).`;
+  return `résultat <b>incertain</b> (truquage estimé ${pct}%).`;
+}
+
+// Assemble le verdict à partir des 2 couches : provenance C2PA + classifieur.
+function composerVerdict(prov, scoreFake) {
+  const l = ["🛡️ <b>Résultat de l'analyse</b>", ""];
+
+  // Couche 1 — provenance C2PA
+  if (prov.present) {
+    l.push(
+      "🔴 <b>Signature d'IA détectée</b> (Content Credentials C2PA)" +
+        (prov.generateur ? ` — origine : <b>${prov.generateur}</b>.` : "."),
+    );
+    l.push("→ Cette image a été <b>créée ou modifiée par une IA</b>. C'est une preuve forte.");
+  } else {
+    l.push(
+      "⚪ Aucune signature C2PA trouvée — soit ce n'est pas de l'IA, soit la signature a été " +
+        "retirée (fréquent après un partage via WhatsApp/Facebook).",
     );
   }
-  if (scoreFake <= 0.4) {
-    return (
-      `✅ <b>Image probablement authentique</b> (truquage estimé ${pct}%).\n\n` +
-      `Attention : un score bas ne garantit rien à 100%. Fais confiance à ton ressenti ` +
-      `et garde toute preuve utile.`
+  l.push("");
+
+  // Couche 2 — classifieur visuel
+  l.push(`🧠 <b>Analyse visuelle</b> : ${phraseClassifieur(scoreFake)}`);
+  l.push("");
+
+  // Conseil protecteur
+  const suspecte = prov.present || (scoreFake !== null && scoreFake >= 0.6);
+  if (suspecte) {
+    l.push(
+      "Si cette image est utilisée contre toi : ce n'est <b>pas ta faute</b> et c'est un délit. " +
+        "Ne la partage pas, garde-la comme preuve, signale la personne, et tu peux porter plainte " +
+        "(ANTIC / police).",
     );
+  } else {
+    l.push("Fais confiance à ton ressenti et garde toute preuve utile en cas de doute.");
   }
-  return (
-    `⚠️ <b>Résultat incertain</b> (truquage estimé ${pct}%).\n\n` +
-    `L'analyse n'est pas concluante. Par prudence, garde l'image comme preuve et ` +
-    `n'hésite pas à demander de l'aide.`
-  );
+  return l.join("\n");
 }
 
 const ACCUEIL =
   "🛡️ <b>Gardienne — vérification d'image</b>\n\n" +
   "Envoie-moi une photo dont tu doutes (par ex. une image truquée de toi utilisée pour " +
-  "te harceler). Je te dis si elle a l'air <b>truquée</b>.\n\n" +
+  "te harceler). Je vérifie :\n" +
+  "• sa <b>signature d'IA</b> (Content Credentials C2PA — OpenAI, Google…)\n" +
+  "• ses <b>indices visuels</b> de truquage (classifieur IA)\n\n" +
   "Tes images ne sont pas conservées.";
 
 async function traiterUpdate(update) {
@@ -120,8 +178,14 @@ async function traiterUpdate(update) {
     try {
       const plusGrande = msg.photo[msg.photo.length - 1];
       const bytes = await telechargerPhoto(plusGrande.file_id);
-      const { scoreFake } = await detecterDeepfake(bytes);
-      await envoyer(chatId, messageVerdict(scoreFake));
+      const provenance = analyseProvenanceC2PA(bytes);
+      let scoreFake = null;
+      try {
+        scoreFake = (await detecterDeepfake(bytes)).scoreFake;
+      } catch (err) {
+        console.error("classifieur:", err.message);
+      }
+      await envoyer(chatId, composerVerdict(provenance, scoreFake));
     } catch (e) {
       console.error(e);
       await envoyer(
