@@ -83,8 +83,30 @@ export default function Analyser() {
         </div>
       </div>
 
-      {resultat && <Verdict resultat={resultat} onSceller={scellerPreuve} />}
+      {resultat && <Verdict resultat={resultat} texte={texte} onSceller={scellerPreuve} />}
       {resultat && <ModelePanel modele={modele} chargement={chargeModele} lexique={resultat} />}
+    </div>
+  );
+}
+
+function BulleMessage({ texte }: { texte: string }) {
+  const heure = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return (
+    <div className="flex items-end gap-2">
+      {/* Avatar illustré (pas une vraie personne) */}
+      <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ink/10 text-ink-soft">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+        </svg>
+      </span>
+      <div className="max-w-[80%]">
+        <p className="mb-1 pl-1 text-[11px] text-ink-soft">Numéro inconnu</p>
+        <div className="rounded-2xl rounded-bl-md bg-black/[0.05] px-3.5 py-2.5">
+          <p className="whitespace-pre-wrap text-[14px] leading-snug text-ink">{texte}</p>
+          <p className="mt-1 text-right text-[10px] text-ink-soft">{heure}</p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -151,9 +173,11 @@ function ModelePanel({
 
 function Verdict({
   resultat,
+  texte,
   onSceller,
 }: {
   resultat: ResultatAnalyse;
+  texte: string;
   onSceller: () => void;
 }) {
   const style = STYLE_NIVEAU[resultat.niveau];
@@ -162,6 +186,9 @@ function Verdict({
 
   return (
     <section className="reveal flex flex-col gap-4 rounded-3xl border border-black/5 bg-white p-5 shadow-xl shadow-ink/5">
+      {/* Message reçu, mis en scène comme une vraie conversation */}
+      <BulleMessage texte={texte} />
+
       {/* En-tête verdict */}
       <div className="flex items-start justify-between gap-3">
         <div>
