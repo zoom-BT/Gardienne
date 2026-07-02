@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import RegisterSW from "@/components/RegisterSW";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -24,6 +25,19 @@ export const metadata: Metadata = {
   title: "Gardienne — comprends, prouve, agis",
   description:
     "Gardienne aide les filles victimes de cyberharcèlement au Cameroun à comprendre ce qu'elles subissent, constituer une preuve et savoir quoi faire.",
+  applicationName: "Gardienne",
+  appleWebApp: {
+    capable: true,
+    title: "Gardienne",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6d28d9",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -40,6 +54,7 @@ export default function RootLayout({
           <main className="flex-1 overflow-y-auto px-5 pb-28 pt-6">{children}</main>
           <BottomNav />
         </div>
+        <RegisterSW />
       </body>
     </html>
   );
