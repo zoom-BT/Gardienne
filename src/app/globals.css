@@ -1,26 +1,65 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Système de design Gardienne (tokens) ────────────────────────────────
+   Palette : ivoire chaud + encre prune + violet (action) + corail (écoute)
+   + teal (sécurité / sceau). Féminin et digne, sans cliché rose.        */
+@theme {
+  --color-cream: #fbf8f4;
+  --color-cream-deep: #f3ecff;
+  --color-ink: #221934;
+  --color-ink-soft: #6b6480;
+  --color-brand: #6d28d9;
+  --color-brand-dark: #5b21b6;
+  --color-lilas: #efe9fe;
+  --color-coral: #f26b7a;
+  --color-coral-soft: #fdeef0;
+  --color-seal: #0e9f8e;
+  --color-seal-dark: #0b7a6d;
+
+  /* Couleurs sémantiques de gravité (pas la marque) */
+  --color-grav-critique: #dc2626;
+  --color-grav-eleve: #ea580c;
+  --color-grav-moyen: #d97706;
+  --color-grav-faible: #ca8a04;
+  --color-grav-sur: #16a34a;
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Fond ambiant doux derrière le « téléphone » sur grand écran */
+.app-backdrop {
+  background:
+    radial-gradient(60% 50% at 15% 0%, #efe6ff 0%, transparent 60%),
+    radial-gradient(50% 40% at 100% 20%, #fde9ec 0%, transparent 55%),
+    var(--color-cream);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    animation: reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
