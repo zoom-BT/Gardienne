@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeroIllustration from "@/components/HeroIllustration";
 
 export default function Accueil() {
   return (
@@ -13,6 +14,9 @@ export default function Accueil() {
 
       {/* Hero — la thèse */}
       <section className="pt-2">
+        <div className="mb-5 -mx-1">
+          <HeroIllustration />
+        </div>
         <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-lilas px-3 py-1 text-xs font-medium text-brand-dark">
           Girls in Cyber Defense
         </p>
