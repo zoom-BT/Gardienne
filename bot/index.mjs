@@ -54,7 +54,7 @@ async function telechargerPhoto(fileId) {
 
 // Interroge le modèle HF de détection de deepfake sur les octets de l'image.
 async function detecterDeepfake(imageBytes) {
-  const res = await fetch(`https://api-inference.huggingface.co/models/${MODEL}`, {
+  const res = await fetch(`https://router.huggingface.co/hf-inference/models/${MODEL}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${HF_TOKEN}`,
