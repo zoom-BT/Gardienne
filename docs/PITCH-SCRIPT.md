@@ -33,8 +33,8 @@
 > photos truquées. Trois problèmes reviennent toujours : *un*, elles ne savent pas si c'est
 > grave ; *deux*, elles n'ont **aucune preuve** pour porter plainte ; *trois*, elles ne
 > savent pas vers qui se tourner. Et les outils existants ne comprennent même pas notre
-> façon de parler — le camfranglais, le pidgin. **58 % des adolescentes connectées ont déjà
-> subi du harcèlement en ligne.** »
+> façon de parler — le camfranglais, le pidgin. **Au Cameroun, 68 % des femmes connectées ont
+> déjà subi une violence numérique — et moins de 5 % portent plainte.** »
 
 ### 02 · La solution
 > « Gardienne est une application — installable sur n'importe quel téléphone — qui fait trois

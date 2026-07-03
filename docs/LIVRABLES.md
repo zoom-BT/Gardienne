@@ -6,15 +6,21 @@
 
 ---
 
-## 📊 Statistiques-chocs (pour la slide 01 — choisis-en UNE)
+## 📊 Statistiques-chocs (sourcées — attribue bien « monde » vs « Cameroun »)
 
-- **58 % des adolescentes ayant accès à Internet ont déjà subi du harcèlement ou des abus en ligne.** *(recommandée — centrée « filles »)*
-- **28 % des femmes** interrogées dans 5 pays africains (Éthiopie, Kenya, Ouganda, Sénégal, Afrique du Sud) déclarent avoir subi des violences en ligne.
-- **85 % des femmes** dans le monde ont subi ou été témoins de violences numériques (Economist Intelligence Unit, 2020).
-- Cameroun : **55 % des femmes** (15-50 ans) ont subi une forme de violence depuis l'âge de 15 ans.
+**Pour la slide 01 (choisis-en une) :**
+- 🇨🇲 **68 % des femmes camerounaises connectées ont déjà subi une forme de violence numérique.** *(Internet Sans Frontières Cameroun — recommandée, locale et forte)*
+- 🌍 **57 % des femmes/filles** ont vu leurs images ou vidéos manipulées/détournées en ligne. *(UNFPA, campagne #BodyRight — mondial)*
+- 🌍 **1 jeune sur 3 (33 %)** victime de harcèlement en ligne. *(UNICEF, 30 pays)*
+- 🇨🇲 **39 % des Camerounaises** ont subi une forme de violence au cours de leur vie. *(se transpose fortement en ligne)*
 
-> ⚠️ Vérifie/attribue la source exacte avant le pitch (UN Women / Plan International
-> pour le 58 %). Cite la source sur la slide, ça renforce la crédibilité.
+**Chiffres d'appui (à semer dans le pitch) :**
+- ⚖️ **Moins de 5 %** des incidents donnent lieu à une plainte formelle → le **fossé de l'impunité** (honte, peur, manque d'accompagnement — ANTIC / ONG / DW).
+- 🕵️ **3 372 à 4 063 faux comptes** Facebook supprimés par l'**ANTIC** ; **~200 réquisitions judiciaires/jour** traitées (identification IP, preuves).
+- 💰 Contexte cybercriminalité : **1,027 milliard FCFA** de préjudices en 2025 (arnaques/phishing — *pas* le harcèlement) ; impact global estimé à **12,2 milliards FCFA** (ANTIC). *(à citer comme ampleur du cyber-risque, pas comme coût du harcèlement)*
+
+> ⚠️ Sur la slide, **cite la source** et précise « monde » ou « Cameroun ». Le 57 % est
+> mondial (UNFPA) ; le 68 % est local (ISF Cameroun).
 
 ---
 
@@ -33,7 +39,8 @@
 > Pire : les outils existants, pensés pour l'anglais ou le français standard, ne
 > comprennent **pas** le harcèlement tel qu'il se dit ici (pidgin, camfranglais).
 
-- **Chiffre qui frappe :** 58 % des adolescentes connectées ont déjà subi du harcèlement en ligne.
+- **Chiffre qui frappe :** au Cameroun, **68 % des femmes connectées** ont déjà subi une
+  violence numérique (ISF Cameroun) — et **moins de 5 %** portent plainte.
 
 ### 02 · La solution (~45 s)
 > **Gardienne** : une application web (installable sur téléphone) qui aide une
@@ -64,10 +71,12 @@ scellée → dossier police → assistant juridique → bot image. Montrer, ne p
   leurs données, et on leur donne une **preuve solide + un dossier** pour se défendre.
 
 ### 05 · Marché & impact (~30 s)
-- **Pour qui ?** Filles et jeunes femmes camerounaises (élèves, étudiantes, jeunes
-  actives, ~13-30 ans). Des millions d'utilisatrices de smartphone potentielles.
-- **Impact :** social (briser le silence, protéger la santé mentale) + sécurité
-  numérique (preuve exploitable, culture du risque).
+- **Pour qui ?** Filles et jeunes femmes camerounaises connectées. Marché adressable
+  estimé à **~4,7 millions** (15,37 M de femmes × 45,6 % de pénétration Internet × 68 %
+  exposées). Canal B2B : **4 500 établissements secondaires** (dont 1 500 privés) et
+  **> 2 millions d'élèves** (MINESEC).
+- **Impact :** social (briser le silence — **< 5 % portent plainte**, protéger la santé
+  mentale) + sécurité numérique (preuve recevable, culture du risque).
 
 ### 06 · Modèle & différenciation (~30 s)
 - **Adoption / financement :** gratuit pour les victimes ; financé par les
@@ -111,7 +120,9 @@ livrable vidéo) au cas où la démo live échoue.
 ## 📋 BUSINESS MODEL CANVAS (9 blocs)
 
 1. **Segments de clientèle**
-   - *Bénéficiaires (gratuit) :* filles/jeunes femmes victimes de cyberharcèlement.
+   - *Bénéficiaires (gratuit) :* filles/jeunes femmes camerounaises victimes de
+     cyberharcèlement — marché adressable **~4,7 M** (femmes connectées exposées).
+   - *Canal / clients B2B :* **4 500 établissements secondaires**, **> 2 M élèves** (MINESEC).
    - *Clients payeurs :* écoles/universités, télécoms, ONG, institutions (MINPROFF/ANTIC).
 2. **Proposition de valeur**
    - Pour les filles : comprendre + preuve infalsifiable + savoir quoi faire, gratuitement et en privé, dans leur langue.
