@@ -7,15 +7,15 @@ const ETAPES = [
   },
   {
     titre: "Garde les preuves",
-    desc: "Ne supprime rien. Scelle chaque message dans Gardienne : tu obtiens une empreinte prête pour une plainte.",
+    desc: "Ne supprime rien. Une simple capture d'écran a une valeur faible : scelle chaque message dans Gardienne pour obtenir une empreinte (SHA-256) qui prouve qu'il n'a pas été modifié.",
   },
   {
     titre: "Bloque et signale",
-    desc: "Bloque le compte, puis signale-le à la plateforme (Facebook, WhatsApp, TikTok…). Chaque appli a un bouton « Signaler ».",
+    desc: "Bloque le compte, signale-le à la plateforme (Facebook, WhatsApp, TikTok…), et signale à l'ANTIC via ses numéros verts gratuits : 8202 ou 8206.",
   },
   {
     titre: "Porte plainte",
-    desc: "La loi camerounaise punit la cybercriminalité et la sextorsion. Rends-toi à la police, à la gendarmerie, ou signale à l'ANTIC.",
+    desc: "La loi camerounaise punit ces faits (Loi 2010/012, Code Pénal). Dépose plainte au commissariat, à la gendarmerie, ou par écrit au Procureur. Un avocat gratuit est possible (assistance judiciaire).",
   },
 ];
 
@@ -87,9 +87,11 @@ export default function Aide() {
           quelqu&apos;un de confiance change tout.
         </p>
         <div className="mt-4 flex flex-col gap-2">
-          <Contact nom="Écoute & soutien psychologique" numero="[À COMPLÉTER]" />
-          <Contact nom="Assistance aux victimes (ANTIC)" numero="[À COMPLÉTER]" />
-          <Contact nom="Police / gendarmerie" numero="117 / 113" />
+          <Contact nom="ALVF — violences faites aux femmes (Yaoundé)" numero="686 967 677" />
+          <Contact nom="Signalement ANTIC (numéros verts)" numero="8202 / 8206" />
+          <Contact nom="MINPROFF (promotion de la femme)" numero="222 23 25 50" />
+          <Contact nom="Ligne Enfance en détresse (mineures)" numero="116" />
+          <Contact nom="Police Secours / Gendarmerie" numero="117 / 113" />
         </div>
       </section>
 
