@@ -23,7 +23,7 @@ export default function SplashIntro() {
     <div
       onClick={() => setPhase("fini")}
       data-noprint
-      className={`absolute inset-0 z-50 flex flex-col items-center justify-center gap-6 transition-opacity duration-500 ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-6 transition-opacity duration-500 ${
         phase === "sortie" ? "opacity-0" : "opacity-100"
       }`}
       style={{ background: "radial-gradient(60% 50% at 50% 32%, #efe6ff 0%, #fbf8f4 70%)" }}
