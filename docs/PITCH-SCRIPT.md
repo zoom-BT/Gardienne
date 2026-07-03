@@ -38,34 +38,39 @@
 
 ### 02 · La solution
 > « Gardienne est une application — installable sur n'importe quel téléphone — qui fait trois
-> choses : elle **comprend**, elle **prouve**, elle **guide**. Elle détecte le harcèlement
-> même en camfranglais, elle transforme un message en **preuve infalsifiable**, et elle
-> donne un plan d'action clair avec un espace d'écoute. Gratuit, privé, et ça marche même
-> hors connexion. Je vous montre. »
+> choses : elle **comprend**, elle **prouve**, elle **guide**. À partir d'un **texte ou d'une
+> capture d'écran**, elle détecte le harcèlement même en camfranglais, transforme la preuve en
+> **dossier prêt pour la police**, et répond aux questions de droit via un **assistant juridique**.
+> Gratuit, privé, et ça marche même hors connexion. Je vous montre. »
 
 ### 03 · Démonstration (montrer, ne pas raconter)
-> *(Ouvrir l'app.)* « Aïcha colle le message qu'elle a reçu… » *(coller l'exemple, cliquer
-> Analyser)* « … et immédiatement : **Chantage et sextorsion, gravité 95, critique.** Notez
-> bien : ce message mélange français et pidgin — *"everybody go see"* — un outil classique
-> passe à côté. Le nôtre, non. »
-> *(Cliquer Sceller.)* « En un clic, Gardienne **scelle la preuve** : une empreinte
-> cryptographique et l'heure exacte. Si quelqu'un modifie le message, l'empreinte change.
-> C'est une preuve recevable. »
-> *(Ouvrir Aide.)* « Et enfin, elle est guidée : bloquer, signaler, porter plainte — et un
-> espace d'écoute, parce qu'elle n'est pas seule. »
-> *(Si le temps / bonus Telegram :)* « On a aussi un bot Telegram qui vérifie si une **photo
-> est truquée** — je vous en reparle. »
+> *(L'app s'ouvre sur l'écran d'accueil animé.)*
+> **Détecter —** *(coller l'exemple ou importer une capture d'écran, cliquer Analyser)*
+> « Aïcha colle le message reçu — ou **importe simplement une capture d'écran**, et notre IA en
+> extrait l'auteur, la plateforme et le texte. Immédiatement : **Chantage/sextorsion, gravité 95,
+> critique.** Ce message mélange français et pidgin — *"everybody go see"* — un outil classique
+> passe à côté ; le nôtre, non. »
+> **Prouver —** *(cliquer « Sceller comme preuve »)* « En un clic, Gardienne **scelle la preuve** :
+> empreinte SHA-256 + **horodatage certifié par notre serveur** (non antidatable). »
+> **Dossier —** *(cliquer « Générer le dossier pour la police »)* « Et surtout : un **modèle de
+> plainte au Procureur pré-rempli**, avec les articles de loi et l'annexe de preuve — prêt à
+> imprimer. »
+> **Être aidée —** *(ouvrir l'Assistant juridique)* « Une question ? *"Quelle peine risque mon
+> harceleur ?"* → réponse **fondée sur la vraie loi camerounaise**, avec la source citée. »
+> **Bonus image —** *(bot Telegram)* « Et pour une photo truquée : notre bot lit sa **signature
+> d'IA (C2PA — ici : Google)** + l'analyse visuelle. »
 
 ### 04 · Notre composante cybersécurité ⭐ (20 points — ralentir ici)
-> « C'est le cœur. Gardienne, ce sont **trois briques de cybersécurité** :
-> *Un* — la **détection par IA**, un moteur hybride qui comprend la menace dans la langue
-> locale.
-> *Deux* — l'**intégrité de la preuve** : un hachage SHA-256 rend la preuve infalsifiable.
-> *Trois* — la **confidentialité dès la conception** : rien ne part sur un serveur, tout
-> reste sur le téléphone de la victime.
-> Et pour les images truquées, on combine deux signaux : la **signature C2PA** — les
-> Content Credentials que laissent OpenAI ou Google — et un **classifieur** pour le reste.
-> Demain, on branchera **SynthID** dès que Google ouvrira son détecteur. »
+> « C'est le cœur. Gardienne, ce sont **plusieurs briques de cybersécurité** :
+> *Un* — la **détection par IA** : un moteur hybride (lexique local + modèle) qui comprend la
+> menace, même en camfranglais ; et un **modèle vision** qui lit une capture d'écran.
+> *Deux* — l'**intégrité de la preuve** : un hachage **SHA-256** + un **horodatage certifié par
+> notre serveur**, donc infalsifiable et non antidatable. Et ce n'est pas un gadget : le droit
+> camerounais reconnaît qu'une simple capture a une valeur faible, et que c'est justement le
+> **hachage** qui prouve au juge qu'un fichier n'a pas été modifié.
+> *Trois* — la **confidentialité par conception** : l'analyse de texte reste sur l'appareil.
+> *Quatre* — pour les images : la **signature C2PA** (OpenAI, Google) + un **double classifieur**
+> (visages truqués + images générées par IA). Demain, **SynthID** dès l'ouverture de son détecteur. »
 
 ### 05 · Marché & impact
 > « Pour qui ? Les millions de jeunes Camerounaises qui ont un smartphone. L'impact est
@@ -123,8 +128,24 @@
 > (sceller ou non, agir ou non).
 
 **Q : Vie privée — où vont les messages et les images ?**
-> L'analyse de texte et le scellement se font **sur l'appareil**, rien n'est envoyé. Pour le
-> bot image, l'image est analysée puis **non conservée**. Privacy by design.
+> La détection de texte (lexique) tourne **sur l'appareil**. Pour l'horodatage certifié, on
+> n'envoie que **l'empreinte** (le hash), jamais le message. L'assistant juridique et la lecture
+> d'une capture passent par une IA en ligne, mais **rien n'est conservé**. Privacy by design.
+
+**Q : Comment marche l'analyse d'une capture d'écran ?**
+> Un modèle vision extrait la plateforme, l'auteur, l'heure et le texte, puis on lance la
+> détection dessus. Important : l'auteur affiché est une **piste**, pas une preuve d'identité —
+> la vérification (traçage IP) reste le rôle de l'ANTIC.
+
+**Q : Votre assistant juridique invente-t-il des lois ?**
+> Non — c'est un **RAG** : il récupère d'abord des passages d'une base juridique **vérifiée**
+> (Loi 2010/012, Code Pénal, Loi 2024/017) et répond **uniquement** à partir de ça, en citant la
+> source. S'il ne sait pas, il le dit et renvoie vers un avocat/l'ANTIC.
+
+**Q : Le dossier de plainte, est-il vraiment utilisable ?**
+> C'est un **modèle** pré-rempli (plainte au Procureur + qualification juridique + annexe de
+> preuve scellée), pensé pour faire gagner du temps à la victime. Il ne remplace pas un avocat —
+> et une aide juridictionnelle gratuite existe.
 
 **Q : Modèle économique — si les filles ne paient pas, comment survivez-vous ?**
 > On ne monétise jamais les victimes. On vend aux **institutions** (licences écoles/

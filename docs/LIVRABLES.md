@@ -40,24 +40,28 @@
 > fille victime de cyberharcèlement à **comprendre** ce qu'elle subit, à en
 > **garder la preuve**, et à savoir **quoi faire**.
 
-- **Bénéfice 1 :** Détecte le harcèlement — **même en camfranglais / pidgin**.
-- **Bénéfice 2 :** Scelle une **preuve infalsifiable** (empreinte SHA-256), prête pour une plainte.
-- **Bénéfice 3 :** Guide vers l'action + un **espace d'écoute**. Gratuit, privé, hors-ligne.
+- **Bénéfice 1 :** Détecte le harcèlement (texte **ou capture d'écran**) — **même en camfranglais / pidgin**.
+- **Bénéfice 2 :** Scelle une **preuve** (SHA-256 + horodatage certifié) et génère un **dossier de plainte** prêt pour la police.
+- **Bénéfice 3 :** **Assistant juridique** (loi camerounaise) + espace d'écoute. Gratuit, privé, hors-ligne.
 
 ### 03 · Démonstration (~90 s)
-Suivre le **parcours de démo** (voir plus bas). Montrer, ne pas raconter.
+Suivre le **parcours de démo** (voir plus bas) : capture d'écran → verdict → preuve
+scellée → dossier police → assistant juridique → bot image. Montrer, ne pas raconter.
 
 ### 04 · Composante cybersécurité (⭐ 20 POINTS — ne pas passer vite) (~45 s)
-> Gardienne intègre **trois** briques de cybersécurité :
-> 1. **Détection par IA** — un moteur hybride (lexique local camfranglais +
->    modèle d'IA) qui comprend la menace, y compris en langue locale.
-> 2. **Intégrité de la preuve par hachage (SHA-256)** — toute modification du
->    message change l'empreinte : la preuve devient **infalsifiable**.
-> 3. **Confidentialité dès la conception (privacy by design)** — aucune donnée
->    personnelle envoyée sur un serveur ; tout reste sur le téléphone de la victime.
+> Gardienne intègre **plusieurs** briques de cybersécurité :
+> 1. **Détection par IA** — moteur hybride (lexique camfranglais + modèle) + **vision**
+>    pour lire une capture d'écran.
+> 2. **Intégrité de la preuve** — hachage **SHA-256** + **horodatage certifié serveur**
+>    (infalsifiable, non antidatable). Reconnu par le droit : une simple capture a une
+>    valeur faible, c'est le **hachage** qui prouve au juge la non-altération.
+> 3. **Confidentialité par conception** — la détection de texte reste sur l'appareil ;
+>    on n'envoie jamais le message, seulement son empreinte.
+> 4. **Provenance des images** — signature **C2PA** (OpenAI, Google) + double classifieur
+>    (visages truqués + images générées par IA) ; **SynthID** en feuille de route.
 
 - **En quoi ça protège les utilisatrices :** on qualifie la menace sans exposer
-  leurs données, et on leur donne une preuve solide pour se défendre.
+  leurs données, et on leur donne une **preuve solide + un dossier** pour se défendre.
 
 ### 05 · Marché & impact (~30 s)
 - **Pour qui ?** Filles et jeunes femmes camerounaises (élèves, étudiantes, jeunes
@@ -86,17 +90,18 @@ Suivre le **parcours de démo** (voir plus bas). Montrer, ne pas raconter.
 
 ## 🎬 PARCOURS DE DÉMO (script, ~90 s)
 
-1. **(5 s)** « Voici Aïcha, 19 ans, étudiante. Elle reçoit ce message. »
-2. **Détecter** — ouvrir **/analyser**, coller (bouton « Exemple ») :
-   *« si tu me quittes je vais poster tes photos nues, everybody go see »* →
-   « Analyser ». Le verdict s'affiche : **Chantage / sextorsion — gravité 92,
-   Critique**. 👉 *« Un outil normal ne comprend pas ce mélange français-pidgin. Le nôtre, si. »*
-3. **(optionnel)** montrer la ligne **Analyse IA complémentaire** qui corrobore.
-4. **Prouver** — « Sceller comme preuve » → la page **Preuve** : montrer le
-   **Sceau** et l'**empreinte SHA-256**. 👉 *« Une preuve infalsifiable pour la plainte. »*
-5. **Agir** — ouvrir **/aide** : plan d'action + espace d'écoute.
-6. **Bonus** — sur Telegram, envoyer une image à **@Gardienne_bot** → « photo
-   probablement truquée ». 👉 *« Le harcèlement passe aussi par l'image truquée. »*
+1. **(5 s)** « Voici Aïcha, 19 ans, étudiante. Elle reçoit ces messages. » *(écran d'accueil animé)*
+2. **Détecter** — sur **/analyser** : « Exemple » (ou **importer une capture d'écran** →
+   l'IA extrait auteur/plateforme/heure) → « Analyser ». Verdict : **Chantage / sextorsion —
+   gravité 95, Critique**. 👉 *« Un outil normal ne comprend pas ce mélange français-pidgin. Le nôtre, si. »*
+3. **Prouver** — « Sceller comme preuve » → **Sceau** + **empreinte SHA-256** + **horodatage
+   certifié serveur**. 👉 *« Infalsifiable et non antidatable. »*
+4. **Dossier** — « Générer le dossier pour la police » → **plainte pré-remplie** (articles de
+   loi + annexe de preuve), imprimable. 👉 *« On transforme un ressenti en dossier actionnable. »*
+5. **Assistant juridique** — bouton flottant → *« Quelle peine risque mon harceleur ? »* →
+   réponse **sourcée sur la loi camerounaise**.
+6. **Bonus image** — Telegram **@Gardienne_bot** : envoyer une image (**en Fichier**) → « signature
+   d'IA C2PA détectée (Google) » + analyse visuelle. 👉 *« Le harcèlement passe aussi par l'image truquée. »*
 
 **Filet de sécurité :** garde une **vidéo/capture** de ce parcours (= aussi le
 livrable vidéo) au cas où la démo live échoue.
