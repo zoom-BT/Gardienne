@@ -16,7 +16,10 @@
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const HF_TOKEN = process.env.HF_TOKEN;
-const MODEL = process.env.DEEPFAKE_MODEL || "dima806/deepfake_vs_real_image_detection";
+// Deux classifieurs complémentaires : visages truqués (face-swap) + images
+// entièrement générées par IA (Gemini, DALL·E, SDXL…).
+const MODELE_DEEPFAKE = process.env.DEEPFAKE_MODEL || "dima806/deepfake_vs_real_image_detection";
+const MODELE_IA = process.env.AI_MODEL || "dima806/ai_vs_real_image_detection";
 
 if (!TELEGRAM_TOKEN) {
   console.error("✗ TELEGRAM_BOT_TOKEN manquant. Voir bot/.env.example.");
@@ -85,10 +88,14 @@ function analyseProvenanceC2PA(imageBytes) {
   return { present: true, generateur };
 }
 
-// ── Couche 2 : classifieur de deepfake (modèle HF) ──────────────────────────
-// Interroge le modèle HF de détection de deepfake sur les octets de l'image.
-async function detecterDeepfake(imageBytes) {
-  const res = await fetch(`https://router.huggingface.co/hf-inference/models/${MODEL}`, {
+// ── Couche 2 : classifieurs d'image (modèles HF) ────────────────────────────
+// Deux modèles complémentaires : visages truqués + images générées par IA.
+const LABELS_FAKE = new Set(["fake", "artificial", "ai", "synthetic", "deepfake", "generated"]);
+const LABELS_REAL = new Set(["real", "human", "authentic", "vrai"]);
+
+// Interroge un classifieur HF et renvoie un score de truquage 0-1.
+async function classifierImage(imageBytes, modele) {
+  const res = await fetch(`https://router.huggingface.co/hf-inference/models/${modele}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${HF_TOKEN}`,
@@ -97,16 +104,27 @@ async function detecterDeepfake(imageBytes) {
     },
     body: imageBytes,
   });
-  if (!res.ok) {
-    throw new Error(`Inférence HF ${res.status}`);
-  }
+  if (!res.ok) throw new Error(`Inférence HF ${res.status}`);
   const data = await res.json();
   if (!Array.isArray(data)) throw new Error("Réponse inattendue du modèle");
-  // Cherche le score du label « fake / deepfake ».
-  const fake = data.find((d) => /fake|deepfake|synth/i.test(d.label));
-  const real = data.find((d) => /real|authentic|vrai/i.test(d.label));
-  const scoreFake = fake ? fake.score : real ? 1 - real.score : 0.5;
-  return { scoreFake, brut: data };
+  const norm = (l) => String(l).toLowerCase().trim();
+  const fake = data.find((d) => LABELS_FAKE.has(norm(d.label)));
+  const real = data.find((d) => LABELS_REAL.has(norm(d.label)));
+  return fake ? fake.score : real ? 1 - real.score : 0.5;
+}
+
+// Combine les deux classifieurs : on retient le score le plus suspect.
+async function detecterTruquage(imageBytes) {
+  const scores = await Promise.all(
+    [MODELE_DEEPFAKE, MODELE_IA].map((m) =>
+      classifierImage(imageBytes, m).catch((e) => {
+        console.error(`classifieur ${m}:`, e.message);
+        return null;
+      }),
+    ),
+  );
+  const valides = scores.filter((s) => s !== null);
+  return valides.length ? Math.max(...valides) : null;
 }
 
 // Phrase courte du classifieur visuel.
@@ -132,7 +150,8 @@ function composerVerdict(prov, scoreFake) {
   } else {
     l.push(
       "⚪ Aucune signature C2PA trouvée — soit ce n'est pas de l'IA, soit la signature a été " +
-        "retirée (fréquent après un partage via WhatsApp/Facebook).",
+        "retirée (fréquent après un partage WhatsApp/Facebook, ou un envoi en <b>Photo</b> sur " +
+        "Telegram : réessaie en <b>Fichier</b>).",
     );
   }
   l.push("");
@@ -161,7 +180,8 @@ const ACCUEIL =
   "été <b>truquée ou générée par une IA</b> :\n" +
   "• sa <b>signature d'IA</b> (Content Credentials C2PA — OpenAI, Google…)\n" +
   "• ses <b>indices visuels</b> de truquage\n\n" +
-  "Aucune image n'est conservée.";
+  "💡 Astuce : envoie l'image en <b>Fichier</b> (pas en Photo) — Telegram efface sinon la " +
+  "signature d'IA.\n\nAucune image n'est conservée.";
 
 async function traiterUpdate(update) {
   const msg = update.message;
@@ -187,12 +207,7 @@ async function traiterUpdate(update) {
     try {
       const bytes = await telechargerPhoto(fileId);
       const provenance = analyseProvenanceC2PA(bytes);
-      let scoreFake = null;
-      try {
-        scoreFake = (await detecterDeepfake(bytes)).scoreFake;
-      } catch (err) {
-        console.error("classifieur:", err.message);
-      }
+      const scoreFake = await detecterTruquage(bytes);
       await envoyer(chatId, composerVerdict(provenance, scoreFake));
       console.log(`✓ Verdict envoyé au chat ${chatId}`);
     } catch (e) {
@@ -213,7 +228,7 @@ async function traiterUpdate(update) {
 // Boucle de long polling.
 async function boucle() {
   let offset = 0;
-  console.log(`✓ Bot Gardienne démarré. Modèle : ${MODEL}`);
+  console.log(`✓ Bot Gardienne démarré. Modèles : ${MODELE_DEEPFAKE} + ${MODELE_IA}`);
   // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
