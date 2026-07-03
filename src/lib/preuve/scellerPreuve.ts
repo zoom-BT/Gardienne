@@ -7,6 +7,12 @@
 
 import type { ResultatAnalyse } from "@/lib/detection/types";
 
+export interface MetaCapture {
+  plateforme?: string | null;
+  auteur?: string | null;
+  heure?: string | null;
+}
+
 export interface DossierPreuve {
   texte: string;
   categorie: string;
@@ -14,6 +20,10 @@ export interface DossierPreuve {
   horodatage: string; // ISO (capture, horloge locale)
   empreinte: string; // SHA-256 hex
   outil: string;
+  // Métadonnées extraites d'une capture d'écran (facultatif).
+  plateforme?: string | null;
+  auteur?: string | null;
+  heureMessage?: string | null;
   // Certificat serveur (horodatage de confiance) — présent si en ligne.
   certifie: boolean;
   horodatageCertifie?: string;
@@ -35,13 +45,15 @@ export async function scellerPreuve(
   texte: string,
   resultat: ResultatAnalyse,
   horodatage: string,
+  meta?: MetaCapture,
 ): Promise<DossierPreuve> {
-  // Contenu canonique protégé par l'empreinte.
+  // Contenu canonique protégé par l'empreinte (métadonnées incluses).
   const contenuCanonique = JSON.stringify({
     texte,
     categorie: resultat.categorie,
     gravite: resultat.gravite,
     horodatage,
+    meta: meta ?? null,
   });
   const empreinte = await empreinteSha256(contenuCanonique);
 
@@ -52,6 +64,9 @@ export async function scellerPreuve(
     horodatage,
     empreinte,
     outil: "Gardienne",
+    plateforme: meta?.plateforme ?? null,
+    auteur: meta?.auteur ?? null,
+    heureMessage: meta?.heure ?? null,
     certifie: false,
   };
 

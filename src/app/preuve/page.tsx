@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { scellerPreuve, type DossierPreuve } from "@/lib/preuve/scellerPreuve";
+import { scellerPreuve, type DossierPreuve, type MetaCapture } from "@/lib/preuve/scellerPreuve";
 import { META_CATEGORIES } from "@/lib/detection/categories";
 import type { Categorie, ResultatAnalyse } from "@/lib/detection/types";
 
@@ -16,12 +16,13 @@ export default function Preuve() {
       setAbsent(true);
       return;
     }
-    const { texte, resultat, horodatage } = JSON.parse(brut) as {
+    const { texte, resultat, horodatage, meta } = JSON.parse(brut) as {
       texte: string;
       resultat: ResultatAnalyse;
       horodatage: string;
+      meta?: MetaCapture;
     };
-    scellerPreuve(texte, resultat, horodatage).then((d) => {
+    scellerPreuve(texte, resultat, horodatage, meta ?? undefined).then((d) => {
       setDossier(d);
       sessionStorage.setItem("gardienne:dossier", JSON.stringify(d));
     });

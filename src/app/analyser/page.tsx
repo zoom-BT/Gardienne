@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { analyserTexte } from "@/lib/detection/analyserTexte";
@@ -9,6 +9,7 @@ import { META_CATEGORIES } from "@/lib/detection/categories";
 import { STYLE_NIVEAU } from "@/lib/detection/ui";
 import { TELEGRAM_BOT_URL } from "@/lib/config";
 import type { ResultatAnalyse } from "@/lib/detection/types";
+import type { MetaCapture } from "@/lib/preuve/scellerPreuve";
 
 const EXEMPLE =
   "Salut belle, pourquoi tu me réponds pas ?\n" +
@@ -17,7 +18,11 @@ const EXEMPLE =
 
 export default function Analyser() {
   const router = useRouter();
+  const fichierRef = useRef<HTMLInputElement>(null);
   const [texte, setTexte] = useState("");
+  const [meta, setMeta] = useState<MetaCapture | null>(null);
+  const [extraction, setExtraction] = useState(false);
+  const [erreurImage, setErreurImage] = useState("");
   const [resultat, setResultat] = useState<ResultatAnalyse | null>(null);
   const [modele, setModele] = useState<ResultatModele | null>(null);
   const [chargeModele, setChargeModele] = useState(false);
@@ -28,20 +33,48 @@ export default function Analyser() {
     setChargeModele(false);
   }
 
-  async function lancerAnalyse() {
-    if (!texte.trim()) return;
-    setResultat(analyserTexte(texte));
+  async function lancerAnalyse(txt = texte) {
+    if (!txt.trim()) return;
+    setResultat(analyserTexte(txt));
     // Couche B : l'IA vient corroborer en arrière-plan (chargement paresseux).
     setModele(null);
     setChargeModele(true);
-    const r = await analyserAvecModele(texte);
+    const r = await analyserAvecModele(txt);
     setModele(r);
     setChargeModele(false);
   }
 
+  // Capture d'écran → réduction → extraction vision (auteur, plateforme, heure, message).
+  async function importerCapture(fichier: File) {
+    setErreurImage("");
+    reinit();
+    setMeta(null);
+    setExtraction(true);
+    try {
+      const dataUrl = await reduireImage(fichier);
+      const r = await fetch("/api/extraire-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataUrl }),
+      });
+      const data = await r.json();
+      if (!data.ok || !data.message) {
+        setErreurImage("Je n'ai pas pu lire cette image. Réessaie, ou colle le texte à la main.");
+      } else {
+        setTexte(data.message);
+        setMeta({ plateforme: data.plateforme, auteur: data.auteur, heure: data.heure });
+        await lancerAnalyse(data.message);
+      }
+    } catch {
+      setErreurImage("Extraction impossible (connexion ?). Colle le texte à la place.");
+    } finally {
+      setExtraction(false);
+    }
+  }
+
   function scellerPreuve() {
     if (!resultat) return;
-    const dossier = { texte, resultat, horodatage: new Date().toISOString() };
+    const dossier = { texte, resultat, horodatage: new Date().toISOString(), meta };
     sessionStorage.setItem("gardienne:preuve", JSON.stringify(dossier));
     router.push("/preuve");
   }
@@ -60,16 +93,57 @@ export default function Analyser() {
           value={texte}
           onChange={(e) => {
             setTexte(e.target.value);
+            setMeta(null);
             reinit();
           }}
           rows={4}
           placeholder="Colle ici le message…"
           className="w-full resize-none rounded-2xl border border-black/10 bg-white p-4 text-[15px] leading-relaxed text-ink outline-none placeholder:text-ink-soft/60 focus:border-brand focus:ring-4 focus:ring-brand/10"
         />
+
+        {/* Import d'une capture d'écran → extraction automatique */}
+        <input
+          ref={fichierRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const f = e.target.files?.[0];
+            if (f) importerCapture(f);
+            e.target.value = "";
+          }}
+        />
+        <button
+          onClick={() => fichierRef.current?.click()}
+          disabled={extraction}
+          className="flex items-center justify-center gap-2 rounded-2xl border border-brand/25 bg-lilas/40 px-4 py-3 text-[14px] font-medium text-brand-dark transition-colors hover:bg-lilas disabled:opacity-50"
+        >
+          {extraction ? (
+            <>
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+              Lecture de la capture…
+            </>
+          ) : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <circle cx="12" cy="12" r="3.2" />
+                <path d="M8 5l1.2-2h5.6L16 5" />
+              </svg>
+              Importer une capture d&apos;écran
+            </>
+          )}
+        </button>
+
+        {erreurImage && (
+          <p className="rounded-xl bg-coral-soft px-3 py-2 text-[12px] text-coral">{erreurImage}</p>
+        )}
+        {meta && <MetaCapteChips meta={meta} />}
+
         <div className="flex items-center gap-3">
           <button
-            onClick={lancerAnalyse}
-            disabled={!texte.trim()}
+            onClick={() => lancerAnalyse()}
+            disabled={!texte.trim() || extraction}
             className="flex-1 rounded-2xl bg-brand px-5 py-3.5 text-[15px] font-semibold text-white shadow-lg shadow-brand/25 transition-transform active:scale-[0.98] disabled:opacity-40 disabled:shadow-none"
           >
             Analyser
@@ -77,6 +151,7 @@ export default function Analyser() {
           <button
             onClick={() => {
               setTexte(EXEMPLE);
+              setMeta(null);
               reinit();
             }}
             className="rounded-2xl border border-black/10 bg-white px-4 py-3.5 text-[13px] font-medium text-ink-soft transition-colors hover:text-ink"
@@ -90,6 +165,51 @@ export default function Analyser() {
       {resultat && <ModelePanel modele={modele} chargement={chargeModele} lexique={resultat} />}
     </div>
   );
+}
+
+function MetaCapteChips({ meta }: { meta: MetaCapture }) {
+  const items = (
+    [
+      meta.plateforme ? { l: "Plateforme", v: meta.plateforme } : null,
+      meta.auteur ? { l: "Auteur", v: meta.auteur } : null,
+      meta.heure ? { l: "Heure", v: meta.heure } : null,
+    ].filter(Boolean) as { l: string; v: string }[]
+  );
+  if (items.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-xl bg-lilas/40 p-2.5">
+      <span className="text-[11px] font-medium text-brand-dark">Extrait de la capture :</span>
+      {items.map((it, i) => (
+        <span key={i} className="rounded-full bg-white px-2.5 py-0.5 text-[11px] text-ink">
+          {it.l} : <strong className="font-semibold">{it.v}</strong>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+// Réduit une image (max 1100px de large, JPEG) pour l'envoi au modèle vision.
+function reduireImage(fichier: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(fichier);
+    const img = new window.Image();
+    img.onload = () => {
+      const ratio = Math.min(1, 1100 / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * ratio);
+      canvas.height = Math.round(img.height * ratio);
+      const ctx = canvas.getContext("2d");
+      URL.revokeObjectURL(url);
+      if (!ctx) return reject(new Error("canvas"));
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", 0.8));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image"));
+    };
+    img.src = url;
+  });
 }
 
 function Conversation({ texte }: { texte: string }) {

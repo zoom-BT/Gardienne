@@ -104,6 +104,13 @@ export default function DossierPolice() {
         <blockquote className="my-2 border-l-2 border-black/20 pl-3 italic">
           « {dossier.texte} »
         </blockquote>
+        {(dossier.plateforme || dossier.auteur || dossier.heureMessage) && (
+          <p>
+            {dossier.plateforme ? `Reçu via ${dossier.plateforme}` : "Reçu"}
+            {dossier.auteur ? `, de la part de « ${dossier.auteur} »` : ""}
+            {dossier.heureMessage ? `, à ${dossier.heureMessage}` : ""}.
+          </p>
+        )}
         <p>
           Cet élément a été préservé et scellé le {dateFr}
           {dossier.certifie ? ` (horodatage certifié par ${dossier.autorite})` : " (horodatage local)"}.
