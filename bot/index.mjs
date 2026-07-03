@@ -145,23 +145,23 @@ function composerVerdict(prov, scoreFake) {
   const suspecte = prov.present || (scoreFake !== null && scoreFake >= 0.6);
   if (suspecte) {
     l.push(
-      "Si cette image est utilisée contre toi : ce n'est <b>pas ta faute</b> et c'est un délit. " +
-        "Ne la partage pas, garde-la comme preuve, signale la personne, et tu peux porter plainte " +
-        "(ANTIC / police).",
+      "Si cette image sert à harceler ou humilier quelqu'un : ce n'est <b>pas la faute de la " +
+        "victime</b>. Ne la partagez pas, conservez-la comme preuve, signalez-la — une plainte est " +
+        "possible (ANTIC 8202 / 8206, police).",
     );
   } else {
-    l.push("Fais confiance à ton ressenti et garde toute preuve utile en cas de doute.");
+    l.push("En cas de doute, conservez l'image comme preuve et demandez de l'aide.");
   }
   return l.join("\n");
 }
 
 const ACCUEIL =
-  "🛡️ <b>Gardienne — vérification d'image</b>\n\n" +
-  "Envoie-moi une photo dont tu doutes (par ex. une image truquée de toi utilisée pour " +
-  "te harceler). Je vérifie :\n" +
+  "🛡️ <b>Gardienne — vérification de photo</b>\n\n" +
+  "Envoie-moi une photo dont tu doutes — <b>pour toi ou pour une amie</b>. Je vérifie si elle a " +
+  "été <b>truquée ou générée par une IA</b> :\n" +
   "• sa <b>signature d'IA</b> (Content Credentials C2PA — OpenAI, Google…)\n" +
-  "• ses <b>indices visuels</b> de truquage (classifieur IA)\n\n" +
-  "Tes images ne sont pas conservées.";
+  "• ses <b>indices visuels</b> de truquage\n\n" +
+  "Aucune image n'est conservée.";
 
 async function traiterUpdate(update) {
   const msg = update.message;
@@ -173,11 +173,19 @@ async function traiterUpdate(update) {
     return;
   }
 
-  if (msg.photo && msg.photo.length > 0) {
+  // Photo compressée OU image envoyée en fichier (document image/*).
+  const fileId =
+    msg.photo && msg.photo.length > 0
+      ? msg.photo[msg.photo.length - 1].file_id
+      : msg.document && /^image\//.test(msg.document.mime_type || "")
+        ? msg.document.file_id
+        : null;
+
+  if (fileId) {
+    console.log(`→ Image reçue du chat ${chatId}`);
     await envoyer(chatId, "🔎 Analyse de l'image en cours…");
     try {
-      const plusGrande = msg.photo[msg.photo.length - 1];
-      const bytes = await telechargerPhoto(plusGrande.file_id);
+      const bytes = await telechargerPhoto(fileId);
       const provenance = analyseProvenanceC2PA(bytes);
       let scoreFake = null;
       try {
@@ -186,8 +194,9 @@ async function traiterUpdate(update) {
         console.error("classifieur:", err.message);
       }
       await envoyer(chatId, composerVerdict(provenance, scoreFake));
+      console.log(`✓ Verdict envoyé au chat ${chatId}`);
     } catch (e) {
-      console.error(e);
+      console.error("traitement image:", e);
       await envoyer(
         chatId,
         "😔 Je n'ai pas réussi à analyser cette image. Réessaie dans un instant.",
@@ -210,6 +219,12 @@ async function boucle() {
     try {
       const res = await fetch(`${API}/getUpdates?timeout=30&offset=${offset}`);
       const data = await res.json();
+      if (!data.ok) {
+        // 409 = une autre instance du bot tourne déjà avec le même jeton.
+        console.error("getUpdates:", data.description);
+        await new Promise((r) => setTimeout(r, 3000));
+        continue;
+      }
       for (const update of data.result || []) {
         offset = update.update_id + 1;
         traiterUpdate(update).catch((e) => console.error(e));
