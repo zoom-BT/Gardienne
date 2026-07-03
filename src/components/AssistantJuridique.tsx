@@ -89,7 +89,7 @@ export default function AssistantJuridique() {
           onClick={() => setOuvert(true)}
           aria-label="Ouvrir l'assistant juridique"
           data-noprint
-          className="absolute bottom-24 right-4 z-20 flex items-center gap-2 rounded-full bg-brand px-4 py-3 text-white shadow-xl shadow-brand/30 transition-transform active:scale-95 lg:bottom-6"
+          className="fixed bottom-24 right-4 z-40 flex items-center gap-2 rounded-full bg-brand px-4 py-3 text-white shadow-xl shadow-brand/30 transition-transform active:scale-95 lg:bottom-6 lg:right-6"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 3v18M7 7h10M6 7l-3 6h6L6 7Zm12 0-3 6h6l-3-6ZM3 13a3 3 0 0 0 6 0M15 13a3 3 0 0 0 6 0M8 21h8" />
@@ -100,7 +100,7 @@ export default function AssistantJuridique() {
 
       {/* Panneau de chat */}
       {ouvert && (
-        <div className="absolute inset-0 z-30 flex flex-col bg-cream lg:inset-auto lg:bottom-6 lg:right-6 lg:h-[560px] lg:max-h-[80vh] lg:w-[380px] lg:overflow-hidden lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-2xl">
+        <div className="fixed inset-0 z-40 flex flex-col bg-cream lg:inset-auto lg:bottom-6 lg:right-6 lg:h-[560px] lg:max-h-[80vh] lg:w-[380px] lg:overflow-hidden lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-2xl">
           {/* En-tête */}
           <header className="flex items-center justify-between border-b border-black/5 bg-white px-4 py-3">
             <div className="flex items-center gap-2.5">
