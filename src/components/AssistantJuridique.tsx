@@ -89,7 +89,7 @@ export default function AssistantJuridique() {
           onClick={() => setOuvert(true)}
           aria-label="Ouvrir l'assistant juridique"
           data-noprint
-          className="absolute bottom-24 right-4 z-20 flex items-center gap-2 rounded-full bg-brand px-4 py-3 text-white shadow-xl shadow-brand/30 transition-transform active:scale-95"
+          className="absolute bottom-24 right-4 z-20 flex items-center gap-2 rounded-full bg-brand px-4 py-3 text-white shadow-xl shadow-brand/30 transition-transform active:scale-95 lg:bottom-6"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
             <path d="M12 3v18M7 7h10M6 7l-3 6h6L6 7Zm12 0-3 6h6l-3-6ZM3 13a3 3 0 0 0 6 0M15 13a3 3 0 0 0 6 0M8 21h8" />

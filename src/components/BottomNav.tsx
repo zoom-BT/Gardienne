@@ -13,7 +13,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="sticky bottom-0 z-10 border-t border-black/5 bg-cream/85 px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur">
+    <nav className="sticky bottom-0 z-10 border-t border-black/5 bg-cream/85 px-3 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur lg:hidden">
       <ul className="flex items-stretch justify-around">
         {ITEMS.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
