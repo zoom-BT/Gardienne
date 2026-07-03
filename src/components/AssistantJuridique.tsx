@@ -100,7 +100,7 @@ export default function AssistantJuridique() {
 
       {/* Panneau de chat */}
       {ouvert && (
-        <div className="absolute inset-0 z-30 flex flex-col bg-cream">
+        <div className="absolute inset-0 z-30 flex flex-col bg-cream lg:inset-auto lg:bottom-6 lg:right-6 lg:h-[560px] lg:max-h-[80vh] lg:w-[380px] lg:overflow-hidden lg:rounded-3xl lg:border lg:border-black/10 lg:shadow-2xl">
           {/* En-tête */}
           <header className="flex items-center justify-between border-b border-black/5 bg-white px-4 py-3">
             <div className="flex items-center gap-2.5">
