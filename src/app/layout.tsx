@@ -4,6 +4,7 @@ import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import RegisterSW from "@/components/RegisterSW";
 import AssistantJuridique from "@/components/AssistantJuridique";
+import SplashIntro from "@/components/SplashIntro";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -55,6 +56,7 @@ export default function RootLayout({
           <main className="flex-1 overflow-y-auto px-5 pb-28 pt-6">{children}</main>
           <AssistantJuridique />
           <BottomNav />
+          <SplashIntro />
         </div>
         <RegisterSW />
       </body>

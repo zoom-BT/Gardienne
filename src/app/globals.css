@@ -64,6 +64,42 @@ body {
   }
 }
 
+/* Splash d'accueil animé */
+.splash-logo {
+  animation: splash-pop 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.splash-shield {
+  stroke-dasharray: 90;
+  stroke-dashoffset: 90;
+  animation: splash-draw 1s ease 0.25s forwards;
+}
+.splash-check {
+  stroke-dasharray: 14;
+  stroke-dashoffset: 14;
+  animation: splash-draw 0.45s ease 1.05s forwards;
+}
+.splash-texte {
+  animation: reveal 0.6s ease 0.5s both;
+}
+.splash-progress {
+  transform: scaleX(0);
+  animation: splash-barre 1.55s ease forwards;
+}
+@keyframes splash-pop {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes splash-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes splash-barre {
+  to { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .splash-logo, .splash-texte, .splash-progress { animation: none; }
+  .splash-shield, .splash-check { animation: none; stroke-dashoffset: 0; }
+}
+
 /* Impression : on ne garde que le document (dossier pour la police) */
 @media print {
   body,
