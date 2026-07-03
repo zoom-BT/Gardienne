@@ -63,3 +63,32 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Impression : on ne garde que le document (dossier pour la police) */
+@media print {
+  body,
+  .app-backdrop {
+    background: #fff !important;
+  }
+  nav,
+  [data-noprint] {
+    display: none !important;
+  }
+  .app-frame {
+    max-width: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  .app-frame main {
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+  .zone-imprimable {
+    border: 0 !important;
+    padding: 0 !important;
+  }
+}

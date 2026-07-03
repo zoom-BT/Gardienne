@@ -21,7 +21,10 @@ export default function Preuve() {
       resultat: ResultatAnalyse;
       horodatage: string;
     };
-    scellerPreuve(texte, resultat, horodatage).then(setDossier);
+    scellerPreuve(texte, resultat, horodatage).then((d) => {
+      setDossier(d);
+      sessionStorage.setItem("gardienne:dossier", JSON.stringify(d));
+    });
   }, []);
 
   if (absent) {
@@ -78,6 +81,23 @@ export default function Preuve() {
             {dossier.empreinte}
           </dd>
         </div>
+        {/* Certificat serveur — horodatage de confiance */}
+        {dossier.certifie ? (
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wide text-ink-soft">
+              Horodatage certifié (serveur)
+            </dt>
+            <dd className="mt-1 text-[13px] text-ink">
+              {new Date(dossier.horodatageCertifie!).toLocaleString("fr-FR")}{" "}
+              <span className="text-seal-dark">· signé par {dossier.autorite}</span>
+            </dd>
+          </div>
+        ) : (
+          <p className="text-[12px] leading-snug text-ink-soft">
+            ⚠️ Horodatage local (hors-ligne). Reconnecte-toi pour un horodatage certifié par
+            le serveur, non modifiable.
+          </p>
+        )}
       </dl>
 
       <p className="flex items-start gap-2 px-1 text-[12px] leading-snug text-ink-soft">
@@ -89,15 +109,26 @@ export default function Preuve() {
         infalsifiable.
       </p>
 
-      <button
-        onClick={() => telecharger(dossier)}
-        className="flex items-center justify-center gap-2 rounded-2xl bg-ink px-5 py-3.5 text-[15px] font-semibold text-white transition-transform active:scale-[0.98]"
-      >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" />
-        </svg>
-        Télécharger le dossier
-      </button>
+      <div className="flex flex-col gap-2.5">
+        <Link
+          href="/preuve/dossier"
+          className="flex items-center justify-center gap-2 rounded-2xl bg-brand px-5 py-3.5 text-[15px] font-semibold text-white shadow-lg shadow-brand/25 transition-transform active:scale-[0.98]"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 3v5h5M8 13h8M8 17h8M8 9h2M7 3h8l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" />
+          </svg>
+          Générer le dossier pour la police
+        </Link>
+        <button
+          onClick={() => telecharger(dossier)}
+          className="flex items-center justify-center gap-2 rounded-2xl border border-black/10 bg-white px-5 py-3 text-[14px] font-medium text-ink transition-colors hover:bg-black/[0.02]"
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" />
+          </svg>
+          Télécharger la preuve (fichier)
+        </button>
+      </div>
     </div>
   );
 }
