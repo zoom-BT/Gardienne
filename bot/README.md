@@ -9,8 +9,9 @@ Détection à **2 couches** (+ 1 en feuille de route) :
 1. **Provenance C2PA** — lit les *Content Credentials* signés par les grands
    générateurs (OpenAI/DALL·E, Google Gemini/Imagen, Adobe Firefly…). Preuve
    forte quand présente. ⚠️ souvent effacée après un partage réseau (WhatsApp/FB).
-2. **Classifieur de deepfake** — modèle Hugging Face existant ; marche même sans
-   métadonnées (analyse des artefacts visuels).
+2. **Double classifieur** — deux modèles Hugging Face : visages truqués
+   (`dima806/deepfake_vs_real`) + images générées par IA (`dima806/ai_vs_real`) ;
+   marche même sans métadonnées. On retient le score le plus suspect.
 3. **SynthID (filigrane pixel)** — *feuille de route* : survit au partage, mais
    le détecteur public n'est pas encore ouvert (liste d'attente Google).
 
@@ -44,6 +45,8 @@ Le bot démarre en *long polling* (pas besoin de serveur public). Envoie-lui
 
 - Le premier appel au modèle peut être lent (démarrage à froid côté HF) : l'en-tête
   `x-wait-for-model` attend qu'il soit prêt. **Teste avant le pitch.**
-- Modèle par défaut : `dima806/deepfake_vs_real_image_detection`. Modifiable via
-  `DEEPFAKE_MODEL` (voir `.env.example`).
+- Modèles par défaut : `dima806/deepfake_vs_real_image_detection` (visages) +
+  `dima806/ai_vs_real_image_detection` (images IA). Modifiables via `DEEPFAKE_MODEL` et `AI_MODEL`.
+- 💡 Pour lire la signature C2PA (OpenAI/Google), envoie l'image **en Fichier** (pas en
+  Photo) : Telegram efface sinon les métadonnées.
 - Aucune image n'est stockée par le bot.
